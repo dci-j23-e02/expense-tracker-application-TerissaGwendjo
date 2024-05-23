@@ -33,5 +33,63 @@ public class Expense {
     * connection between an expense and the user who incurred it.
     * */
 
+    //Constructors
+    public Expense() {
+    }
 
+    public Expense(Double amount, String description, String category, LocalDate date, User user) {
+        this.amount = amount;
+        this.description = description;
+        this.category = category;
+        this.date = date;
+        this.user = user;
+    }
+
+    //Getters and setters
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

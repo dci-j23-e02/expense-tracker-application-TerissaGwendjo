@@ -6,23 +6,23 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="mb-4" th:text="${expense.id} == null ? 'Add New Expense' : 'Edit Expense'}"></h1>
-    <form th:action="@{${expense.id} == null ? '/api/expenses' : '/api/expenses/' + ${expense.id}}" th:object="${expense}" method="post">
+    <h1 class="mb-4" th:text="${expense.id} == null ? 'Add New Expense' : 'Edit Expense'"></h1>
+    <form th:action="@${expense.id} == null ? '/api/expenses' : '/api/expenses/' + ${expense.id}" th:object="${expense}" method="post">
         <div class="mb-3">
             <label for="amount" class="form-label">Amount</label>
-            <input type="number" class="form-control" id="amount" th:field="*{amount}" required>
+            <input type="number" class="form-control" id="amount" th:field="*{expense.amount}" required>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
-            <input type="text" class="form-control" id="description" th:field="*{description}" required>
+            <input type="text" class="form-control" id="description" th:field="*{expense.description}" required>
         </div>
         <div class="mb-3">
             <label for="category" class="form-label">Category</label>
-            <input type="text" class="form-control" id="category" th:field="*{category}" required>
+            <input type="text" class="form-control" id="category" th:field="*{expense.category}" required>
         </div>
         <div class="mb-3">
             <label for="date" class="form-label">Date</label>
-            <input type="date" class="form-control" id="date" th:field="*{date}" required>
+            <input type="date" class="form-control" id="date" th:field="*{expense.date}" required>
         </div>
         <div class="mb-3">
             <label for="user" class="form-label">User</label>
