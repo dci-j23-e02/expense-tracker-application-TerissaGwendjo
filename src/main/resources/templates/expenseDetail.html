@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>View Expense</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">Expense Details</h1>
+    <div class="mb-3">
+        <label class="form-label">ID</label>
+        <p class="form-control-static" th:text="${expense.id}"></p>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <p class="form-control-static" th:text="${expense.amount}"></p>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <p class="form-control-static" th:text="${expense.description}"></p>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <p class="form-control-static" th:text="${expense.category}"></p>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Date</label>
+        <p class="form-control-static" th:text="${expense.date}"></p>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">User</label>
+        <p class="form-control-static" th:text="${expense.user.username}"></p>
+    </div>
+    <a class="btn btn-secondary" th:href="@{/expenses}">Back</a>
+    <a class="btn btn-warning" th:href="@{/expenses/edit/{id}(id=${expense.id})}">Edit</a>
+    <form th:action="@{/api/expenses/{id}(id=${expense.id})}" method="post" style="display:inline;">
+        <input type="hidden" name="_method" value="delete" />
+        <button class="btn btn-danger" type="submit">Delete</button>
+    </form>
+</div>
+</body>
+</html>

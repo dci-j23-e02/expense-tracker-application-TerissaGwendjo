@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Expense Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4" th:text="${expense.id} == null ? 'Add New Expense' : 'Edit Expense'}"></h1>
+    <form th:action="@{${expense.id} == null ? '/api/expenses' : '/api/expenses/' + ${expense.id}}" th:object="${expense}" method="post">
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="amount" th:field="*{amount}" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="description" th:field="*{description}" required>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <input type="text" class="form-control" id="category" th:field="*{category}" required>
+        </div>
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" th:field="*{date}" required>
+        </div>
+        <div class="mb-3">
+            <label for="user" class="form-label">User</label>
+            <select class="form-select" id="user" th:field="*{user.id}">
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a class="btn btn-secondary" th:href="@{/expenses}">Cancel</a>
+    </form>
+</div>
+</body>
+</html>
+
