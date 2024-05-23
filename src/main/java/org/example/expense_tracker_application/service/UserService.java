@@ -14,20 +14,36 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User save(User user) {
+    @Transactional
+    public User saveUser(User user) {
         return userRepository.save(user);
     }
 
-    public User findById(Long id) {
+    public User findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void updateUser(Long id, User user) {
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser != null) {
+            existingUser.setUsername(user.getUsername());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setEmail(user.getEmail());
+            userRepository.save(existingUser);
+        } else {
+            System.err.println("User not found with ID: " + id);
+        }
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+
 }

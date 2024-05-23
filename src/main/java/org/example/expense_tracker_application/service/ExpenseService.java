@@ -16,20 +16,20 @@ public class ExpenseService {
     @Autowired
     private ExpenseRepository expenseRepository;
 
-    public Expense save(Expense expense) {
+    public Expense saveExpense(Expense expense) {
         return expenseRepository.save(expense);
     }
 
-    public Expense findById(Long id) {
+    public Expense findExpenseById(Long id) {
         return expenseRepository.findById(id).orElse(null);
     }
 
-    public List<Expense> findAll() {
+    public List<Expense> findAllExpenses() {
         return expenseRepository.findAll();
     }
 
     @Transactional
-    public void deleteById(Long id) {
+    public void deleteExpenseById(Long id) {
         expenseRepository.deleteById(id);
     }
 
@@ -41,6 +41,21 @@ public class ExpenseService {
     @Transactional
     public void deleteByCategory(String category) {
         expenseRepository.deleteByCategory(category);
+    }
+
+    @Transactional
+    public void updateExpense(Long id, Expense expense) {
+        Expense existingExpense = expenseRepository.findById(id).orElse(null);
+        if (existingExpense != null) {
+            existingExpense.setAmount(expense.getAmount());
+            existingExpense.setDescription(expense.getDescription());
+            existingExpense.setCategory(expense.getCategory());
+            existingExpense.setDate(expense.getDate());
+            existingExpense.setUser(expense.getUser());
+            expenseRepository.save(existingExpense);
+        } else {
+            System.err.println("Expense not found with ID: " + id);
+        }
     }
 
     @Transactional
@@ -77,8 +92,10 @@ public class ExpenseService {
 
     @Transactional
     @Modifying
-    public void updateMultipleExpenses(List<Expense> expenses) {
-        for (Expense expense : expenses) {
+    public void updateMultipleExpenses(List<Long> ids, Double amount) {
+        List<Expense> expensesToUpdate = expenseRepository.findAllById(ids);
+        for (Expense expense : expensesToUpdate) {
+            expense.setAmount(amount);
             expenseRepository.save(expense);
         }
     }
