@@ -22,7 +22,7 @@ public class CombinedController {
     private ExpenseService expenseService;
     @GetMapping("/")
     public String homePage(Model model) {
-        // Add any necessary attributes to the model
+
         model.addAttribute("message", "Welcome to the Expense Management System");
         return "home";
     }
