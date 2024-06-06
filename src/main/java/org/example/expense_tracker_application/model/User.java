@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
+@Table(name = "users")
     public class User {
 
         @Id
@@ -25,7 +26,7 @@ import java.util.Set;
 
         private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
     //  It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
-    //  and these expenses are stored within the expenses set.
+    //    and these expenses are stored within the expenses set.
 
 
         // Constructors
