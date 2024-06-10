@@ -9,7 +9,7 @@ import java.util.Set;
     public class User {
 
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.SEQUENCE)
         @Column(name="user_id") // ensures id field in your User class maps to a column named user_id in the database table.
         private Long id;
 
@@ -21,12 +21,13 @@ import java.util.Set;
 
         @Column(nullable = false, unique = true)
         private String email;
+
         @OneToMany(mappedBy = "user") // signifies a one-to-many relationship between the class it's applied to
         //(in this case, the User class) and another entity (the Expense class).
 
-        private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
+       private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
     //  It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
-    //    and these expenses are stored within the expenses set.
+    //  and these expenses are stored within the expenses set.
 
 
         // Constructors
@@ -38,7 +39,15 @@ import java.util.Set;
             this.email = email;
         }
 
-        // Getters and setters
+    public User(Long id, String username, String password, String email, Set<Expense> expenses) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.expenses = expenses;
+    }
+
+    // Getters and setters
         public Long getId() {
             return id;
         }

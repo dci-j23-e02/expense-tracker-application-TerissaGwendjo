@@ -7,7 +7,7 @@ import java.time.LocalDate;
 @Entity
 public class Expense {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)
@@ -21,10 +21,8 @@ public class Expense {
 
     @Column(nullable = false)
     private LocalDate date;
-
     @ManyToOne //  indicates that the field user represents a many-to-one relationship
-    @JoinColumn(name = "user_id", nullable = false) //This annotation tells JPA that a foreign key column exists in the
-    // Expense table to reference the primary key of another table.
+    @JoinColumn(name = "user_id", nullable = false) //This annotation tells JPA that a foreign key column exists in the Expense table to reference the primary key of another table.
     private User user;
 
     /*
@@ -37,7 +35,15 @@ public class Expense {
     public Expense() {
     }
 
-    public Expense(Double amount, String description, String category, LocalDate date, User user) {
+    public Expense(Double amount, String description, String category, LocalDate date) {
+        this.amount = amount;
+        this.description = description;
+        this.category = category;
+        this.date = date;
+
+    }
+    public Expense(Long id, Double amount, String description, String category, LocalDate date, User user) {
+        this.id = id;
         this.amount = amount;
         this.description = description;
         this.category = category;
@@ -85,11 +91,4 @@ public class Expense {
         this.date = date;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

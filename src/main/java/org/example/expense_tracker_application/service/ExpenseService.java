@@ -1,7 +1,6 @@
 package org.example.expense_tracker_application.service;
 
 import org.example.expense_tracker_application.model.Expense;
-import org.example.expense_tracker_application.model.User;
 import org.example.expense_tracker_application.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
@@ -51,7 +50,7 @@ public class ExpenseService {
             existingExpense.setDescription(expense.getDescription());
             existingExpense.setCategory(expense.getCategory());
             existingExpense.setDate(expense.getDate());
-            existingExpense.setUser(expense.getUser());
+           // existingExpense.setUser(expense.getUser());
             expenseRepository.save(existingExpense);
         } else {
             System.err.println("Expense not found with ID: " + id);

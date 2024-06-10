@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller // Marks this class as a Spring MVC controller
-@RequestMapping("/management") // serves as base for all endpoints and maps requests starting with /management to this controller
+@RequestMapping("/") // serves as base for all endpoints and maps requests starting with /management to this controller
 public class CombinedController {
 
     @Autowired // Injects the UserService dependency
@@ -44,8 +44,9 @@ public class CombinedController {
 
     @PostMapping("/users") // Maps POST requests for /management/users to this method
     public String createUser(@ModelAttribute User user) {
-        userService.saveUser(user); // Saves the new user
-        return "redirect:/management/users"; // Redirects to the list of users
+        System.out.println("User email: " + user.getEmail());
+        userService.saveUser(user);
+        return "redirect:/users";
     }
 
     @GetMapping("/users/edit/{id}") // Maps GET requests for /management/users/edit/{id} to this method
@@ -58,13 +59,13 @@ public class CombinedController {
     @PostMapping("/users/update/{id}") // Maps POST requests for /management/users/update/{id} to this method
     public String updateUser(@PathVariable Long id, @ModelAttribute User user) {
         userService.updateUser(id, user); // Updates the user
-        return "redirect:/management/users"; // Redirects to the list of users
+        return "redirect:/users"; // Redirects to the list of users
     }
 
     @GetMapping("/users/delete/{id}") // Maps GET requests for /management/users/delete/{id} to this method
     public String deleteUser(@PathVariable Long id) {
         userService.deleteUser(id); // Deletes the user by ID
-        return "redirect:/management/users"; // Redirects to the list of users
+        return "redirect:/users"; // Redirects to the list of users
     }
 
     // Expense Management
@@ -167,6 +168,24 @@ public class CombinedController {
         expenseService.deleteExpenseById(id); // Deletes the expense by ID
         return "redirect:/management/expenses"; // Redirects to the list of expenses
     }
+     //Login and logout endpoints
+     @GetMapping("/login")
+     public String showLoginForm( Model model) {
+         // Adds a default error message to the model
+         model.addAttribute("errorMessage", "Invalid credentials");
+
+         // Returns the "login" view
+         return "login";
+     }
+
+    @GetMapping("/logout")
+    public String logout() {
+
+        return "redirect:/login?logout"; // Redirect to login page with logout parameter
+    }
+
+
+
 
     /* @PathVariable is used to extract the id from the URL.@RequestMapping (and its shorthand variants like @GetMapping,
        @PostMapping, @PutMapping, and @DeleteMapping) is used to map HTTP requests to handler methods. @RequestBody is

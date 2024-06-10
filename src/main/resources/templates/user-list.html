@@ -7,7 +7,7 @@
 <body>
 <div class="container">
     <h1>User List</h1>
-    <a th:href="@{/management/users/new}" class="btn btn-primary">Create New User</a>
+    <a th:href="@{/users/new}" class="btn btn-primary">Create New User</a>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -23,8 +23,8 @@
             <td th:text="${user.username}">Username</td>
             <td th:text="${user.email}">Email</td>
             <td>
-                <a th:href="@{/management/users/edit/{id}(id=${user.id})}" class="btn btn-warning">Edit</a>
-                <a th:href="@{/management/users/delete/{id}(id=${user.id})}" class="btn btn-danger">Delete</a>
+                <a th:href="@{/users/edit/{id}(id=${user.id})}" class="btn btn-warning">Edit</a>
+                <a th:href="@{/users/delete/{id}(id=${user.id})}" class="btn btn-danger">Delete</a>
             </td>
         </tr>
         </tbody>
