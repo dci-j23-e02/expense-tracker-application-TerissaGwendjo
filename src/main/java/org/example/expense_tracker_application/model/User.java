@@ -72,6 +72,13 @@ import java.util.Set;
         public void setEmail(String email) {
             this.email = email;
         }
+        public Set<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(Set<Expense> expenses) {
+        this.expenses = expenses;
+    }
 
         /*
         * The @OneToMany(mappedBy = "user") private Set<Expense> expenses; annotation in the User class tells JPA that:

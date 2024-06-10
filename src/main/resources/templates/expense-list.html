@@ -7,7 +7,7 @@
 <body>
 <div class="container">
     <h1>Expense List</h1>
-    <a th:href="@{/management/expenses/new}" class="btn btn-primary">Create New Expense</a>
+    <a th:href="@{/expenses/new}" class="btn btn-primary">Create New Expense</a>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -29,8 +29,8 @@
             <td th:text="${expense.date}">2024-01-01</td>
             <td th:text="${expense.user.username}">User</td>
             <td>
-                <a th:href="@{/management/expenses/edit/{id}(id=${expense.id})}" class="btn btn-warning">Edit</a>
-                <a th:href="@{/management/expenses/delete/{id}(id=${expense.id})}" class="btn btn-danger">Delete</a>
+                <a th:href="@{expenses/edit/{id}(id=${expense.id})}" class="btn btn-warning">Edit</a>
+                <a th:href="@{expenses/delete/{id}(id=${expense.id})}" class="btn btn-danger">Delete</a>
             </td>
         </tr>
         </tbody>
