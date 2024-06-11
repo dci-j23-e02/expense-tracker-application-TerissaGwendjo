@@ -14,6 +14,9 @@ import java.util.List;
 
 @Service
 public class UserService implements UserDetailsService {
+    //We implement the UserDetailsService to allow Spring Security to interact with custom data sources where user information is stored This could be a database.
+    // Also for custom authentication logic (we havecontrol over how user inormation is retrieved)
+    // For security configuration (it is crucial for securing web applications as it provides the necessary user data that Spring Security needs to authenticate and authorize users.)
 
     @Autowired
     private UserRepository userRepository;
