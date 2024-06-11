@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Controller // Marks this class as a Spring MVC controller
-//@RequestMapping("/") // serves as base for all endpoints and maps requests starting with /management to this controller
 public class CombinedController {
 
     @Autowired // Injects the UserService dependency
