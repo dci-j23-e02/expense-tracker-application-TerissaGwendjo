@@ -45,7 +45,7 @@ public class CombinedController {
     public String createUser(@ModelAttribute User user) {
         System.out.println("User email: " + user.getEmail());
         userService.saveUser(user);
-        return "redirect:/users";
+        return "redirect:/login";
     }
 
     @GetMapping("/users/edit/{id}") // Maps GET requests for /users/edit/{id} to this method
@@ -174,7 +174,7 @@ public class CombinedController {
          model.addAttribute("errorMessage", "Invalid credentials");
 
          // Returns the "login" view
-         return "login";
+         return "login"; // return a string with the name of the html file
      }
 
     @GetMapping("/logout")
