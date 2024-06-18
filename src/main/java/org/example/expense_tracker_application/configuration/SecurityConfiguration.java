@@ -32,7 +32,7 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         // Permit all requests to the home page and static resources
-                        .requestMatchers("/users/new", "/login", "/users").permitAll()
+                        .requestMatchers("/users/new", "/login", "/users", "/verify").permitAll()
                         // Require authentication for any other request
                         .anyRequest().authenticated()
 

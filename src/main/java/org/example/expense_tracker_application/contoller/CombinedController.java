@@ -70,6 +70,12 @@ public class CombinedController {
         return "redirect:/users"; // Redirects to the list of users
     }
 
+    @GetMapping("/verify")
+    public String verifyUser (@RequestParam("token") String token) {
+        userService.verifyUser(token);
+        return "redirect:/login?verified";
+    }
+
     // Expense Management
 
     @GetMapping("/expenses") // Maps GET requests for /expenses to this method

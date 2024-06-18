@@ -37,10 +37,11 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public User saveUser(User user) {
-        System.out.println(user.getUsername());
+    public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        userRepository.save(user);
+        sendVerificationEmail(user);
+
     }
 
     public User findUserById(Long id) {
@@ -123,7 +124,7 @@ public class UserService implements UserDetailsService {
         createVerificationToken(user,token);
         String recipientAddress = user.getEmail();
         String subject = "Email Verification";
-        String confirmationUrl = "http://localhost:8085/verify?token=" + token;
+        String confirmationUrl = "http://localhost:7272/verify?token=" + token;
         String message = "Please click the link below to verify your email address:\n" + confirmationUrl;
 
         SimpleMailMessage email = new SimpleMailMessage();
