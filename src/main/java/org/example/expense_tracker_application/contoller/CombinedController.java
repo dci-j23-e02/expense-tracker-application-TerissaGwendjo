@@ -22,6 +22,9 @@ public class CombinedController {
     @Autowired // Injects the ExpenseService dependency
     private ExpenseService expenseService;
 
+    // what makes these dependencies as bean is the annotation @Service
+    //so any instance of those classes will be considered a bean in our spring container
+
     @GetMapping("/") // Maps GET requests for / to this method
     public String homePage(Model model) {
         model.addAttribute("message", "Welcome to the Expense Management System"); // Adds a message to the model
