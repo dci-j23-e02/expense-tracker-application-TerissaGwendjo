@@ -1,8 +1,12 @@
 package org.example.expense_tracker_application.service;
 
 import org.example.expense_tracker_application.model.User;
+import org.example.expense_tracker_application.model.VerificationToken;
 import org.example.expense_tracker_application.repository.UserRepository;
+import org.example.expense_tracker_application.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,7 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -23,6 +29,11 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    private VerificationTokenRepository tokenRepository;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
 
     @Transactional
@@ -79,4 +90,49 @@ public class UserService implements UserDetailsService {
     public User findByUserName(String username) {
         return userRepository.findByUsername(username); // Calls the User repository method to find the user by username
     }
+
+    public void createVerificationToken(User user, String token) {
+        VerificationToken verificationToken = new VerificationToken();
+        verificationToken.setToken(token);
+        verificationToken.setUser(user);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusDays(1));
+        tokenRepository.save(verificationToken);
+
+    }
+
+    public VerificationToken getVerificationToken (String token){
+        return tokenRepository.findByToken(token);
+    }
+
+    public void verifyUser (String token){
+        VerificationToken verificationToken = getVerificationToken(token);
+        if (
+                verificationToken != null // does exist
+                        &&
+                        verificationToken.getExpiryDate().isAfter(LocalDateTime.now())  // not expired
+        ) {
+            User user = verificationToken.getUser();
+            user.setVerified(true);
+            userRepository.save(user);
+            //tokenRepository.delete(verificationToken); we might keep it for our future logs
+        }
+    }
+
+    private void sendVerificationEmail (User user) {
+        String token = UUID.randomUUID().toString();
+        createVerificationToken(user,token);
+        String recipientAddress = user.getEmail();
+        String subject = "Email Verification";
+        String confirmationUrl = "http://localhost:8085/verify?token=" + token;
+        String message = "Please click the link below to verify your email address:\n" + confirmationUrl;
+
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setTo(recipientAddress);
+        email.setSubject(subject);
+        email.setText(message);
+
+        mailSender.send(email);
+    }
+
+
 }

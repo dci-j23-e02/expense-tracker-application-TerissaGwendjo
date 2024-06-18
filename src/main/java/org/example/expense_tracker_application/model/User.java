@@ -28,9 +28,11 @@ import java.util.Set;
        private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
     //  It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
     //  and these expenses are stored within the expenses set.
+    @Column(nullable = false)
+    private boolean verified = false; // so from here we ask what user has been verified
 
 
-        // Constructors
+    // Constructors
         public User() {
         }
         public User(String username, String password, String email) {
@@ -74,6 +76,14 @@ import java.util.Set;
         }
         public Set<Expense> getExpenses() {
         return expenses;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 
     public void setExpenses(Set<Expense> expenses) {
