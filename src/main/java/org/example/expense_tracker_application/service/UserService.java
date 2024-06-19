@@ -5,6 +5,7 @@ import org.example.expense_tracker_application.model.VerificationToken;
 import org.example.expense_tracker_application.repository.UserRepository;
 import org.example.expense_tracker_application.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,10 +38,20 @@ public class UserService implements UserDetailsService {
 
 
     @Transactional
-    public void saveUser(User user) {
+    public boolean saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        sendVerificationEmail(user);
+        try {
+            userRepository.save(user);
+            sendVerificationEmail(user);
+
+        } catch (MailException e) {
+            //log in exception (optional)
+            System.out.println("Fail to send Verification Email:" + e.getMessage());
+            return false;
+        }
+        return true;
+        //In this method we are saving the user only after the user has received the verification mail
+        //if no it means there was an error and the user will not be saved
 
     }
 
@@ -119,7 +130,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    private void sendVerificationEmail (User user) {
+    private void sendVerificationEmail (User user) throws MailException {
         String token = UUID.randomUUID().toString();
         createVerificationToken(user,token);
         String recipientAddress = user.getEmail();
