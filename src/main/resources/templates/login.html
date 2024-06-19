@@ -13,7 +13,7 @@
             Login successful! Redirecting to the home page...
         </div>
         <div th:if="${param.error}" class="alert alert-danger" role="alert">
-            <span th:text="${errorMessage}">Test</span>
+            <span>Invalid Credentials or email is not verified!</span>
         </div>
         <div th:if="${param.logout}" id="logoutAlert" class="alert alert-info" role="alert">
             Logged out successfully!

@@ -45,9 +45,13 @@ public class CombinedController {
     }
 
     @PostMapping("/users") // Maps POST requests for /users to this method
-    public String createUser(@ModelAttribute User user) {
+    public String createUser(@ModelAttribute User user, Model model) {
         System.out.println("User email: " + user.getEmail());
-        userService.saveUser(user);
+        boolean isUserSaved = userService.saveUser(user);
+        if (!isUserSaved){
+            model.addAttribute("errorMessage", "Failed to send verification e-mail. Please add a valid email address!");
+            return "redirect:/create-user";
+        }
         return "redirect:/login";
     }
 

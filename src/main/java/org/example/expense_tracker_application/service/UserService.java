@@ -50,9 +50,6 @@ public class UserService implements UserDetailsService {
             return false;
         }
         return true;
-        //In this method we are saving the user only after the user has received the verification mail
-        //if no it means there was an error and the user will not be saved
-
     }
 
     public User findUserById(Long id) {
@@ -90,6 +87,8 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             // Throw UsernameNotFoundException
             throw new UsernameNotFoundException("User not found");
+        }   if (!user.isVerified()) {
+            throw new UsernameNotFoundException("User email is not verified!");
         }
         // Build and return UserDetails object with user details and authorities
         return org.springframework.security.core.userdetails.User
@@ -101,6 +100,10 @@ public class UserService implements UserDetailsService {
 
     public User findByUserName(String username) {
         return userRepository.findByUsername(username); // Calls the User repository method to find the user by username
+    }
+
+    public  User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public void createVerificationToken(User user, String token) {

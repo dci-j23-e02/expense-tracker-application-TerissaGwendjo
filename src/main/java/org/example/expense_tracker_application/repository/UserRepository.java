@@ -9,4 +9,6 @@ public interface UserRepository extends JpaRepository <User, Long> { // the enti
     // and the data type used for the primary key (ID) of the User entity. Here, it's specified as Long.
     User findByUsername(String username); // Method to find a user by username
 
+    User findByEmail(String email);
+
 }
