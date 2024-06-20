@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -40,6 +42,9 @@ public class UserService implements UserDetailsService {
     @Transactional
     public boolean saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Set<String>roles = new HashSet<>();
+        roles.add("USER"); // here a role "user" has been added to the set of roles
+        user.setRoles(roles);
         try {
             userRepository.save(user);
             sendVerificationEmail(user);
@@ -87,14 +92,16 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             // Throw UsernameNotFoundException
             throw new UsernameNotFoundException("User not found");
-        }   if (!user.isVerified()) {
+        } /*  if (!user.isVerified()) {
             throw new UsernameNotFoundException("User email is not verified!");
         }
+        .accountLocked(!user.isVerified()) is same like the above if method*/
         // Build and return UserDetails object with user details and authorities
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername()) // Set the username
                 .password(user.getPassword()) // Set the password
-                .authorities("USER") // Set authorities/roles
+                .authorities(user.getRoles().toArray(new String[0])) // Set authorities/roles
+                .accountLocked(!user.isVerified()) // if the account is verified, then this statement is false so account won't be locked if account isn't verified, then statement is true and account will be suspended
                 .build();
     }
 

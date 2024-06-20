@@ -25,28 +25,40 @@ import java.util.Set;
         @OneToMany(mappedBy = "user") // signifies a one-to-many relationship between the class it's applied to
         //(in this case, the User class) and another entity (the Expense class).
 
-       private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
-    //  It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
-    //  and these expenses are stored within the expenses set.
-    @Column(nullable = false)
-    private boolean verified = false; // so from here we ask what user has been verified
+        private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
+        // It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
+        // and these expenses are stored within the expenses set.
+        @Column(nullable = false)
+        private boolean verified = false; // so from here we ask what user has been verified
+
+
+        @ElementCollection(fetch = FetchType.EAGER) // meaning we will load the role type immediately the user is loaded
+        @CollectionTable(name = "users_roles" , joinColumns = @JoinColumn(name = "user_id")) // the purpose of this is to create a table that will be used to store the collection of elements
+        @Column(name = "role")
+        private Set<String> roles;
 
 
     // Constructors
         public User() {
         }
-        public User(String username, String password, String email) {
-            this.username = username;
-            this.password = password;
-            this.email = email;
-        }
 
-    public User(Long id, String username, String password, String email, Set<Expense> expenses) {
+    public User(Long id, String username, String password, String email, Set<Expense> expenses, boolean verified, Set<String> roles) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.expenses = expenses;
+        this.verified = verified;
+        this.roles = roles;
+    }
+
+    public User(String username, String password, String email, Set<Expense> expenses, boolean verified, Set<String> roles) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.expenses = expenses;
+        this.verified = verified;
+        this.roles = roles;
     }
 
     // Getters and setters
@@ -76,6 +88,14 @@ import java.util.Set;
         }
         public Set<Expense> getExpenses() {
         return expenses;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 
     public boolean isVerified() {

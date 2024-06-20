@@ -32,7 +32,8 @@ public class SecurityConfiguration {
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         // Permit all requests to the home page and static resources
-                        .requestMatchers("/users/new", "/login", "/users", "/verify").permitAll()
+                        .requestMatchers("/users/new", "/login", "/users", "/verify", "/assign-admin").permitAll()
+                        .requestMatchers("/currency-converter").hasRole("ADMIN")
                         // Require authentication for any other request
                         .anyRequest().authenticated()
 

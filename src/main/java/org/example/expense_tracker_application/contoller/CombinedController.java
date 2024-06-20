@@ -11,7 +11,9 @@ import org.example.expense_tracker_application.model.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller // Marks this class as a Spring MVC controller
 public class CombinedController {
@@ -79,6 +81,31 @@ public class CombinedController {
         userService.verifyUser(token);
         return "redirect:/login?verified";
     }
+
+
+    @GetMapping("/assign-admin")
+    public String showAdminRoleForm(){
+        return "assign-admin";
+    }
+
+    @PostMapping("/assign-admin")
+    public String assignAdminRole(String username, Model model) {
+        User user = userService.findByUserName(username);
+        if (user != null){
+            Set <String> roles = new HashSet<>(user.getRoles());
+            roles.add("ADMIN");
+            user.setRoles(roles);
+            userService.saveUser(user);
+            model.addAttribute("successMessage", "Admin role assigned successfully!");
+        } else {
+            model.addAttribute("errorMessage", "User not found!");
+        }
+        return "assign-admin";
+    }
+
+
+
+
 
     // Expense Management
 
