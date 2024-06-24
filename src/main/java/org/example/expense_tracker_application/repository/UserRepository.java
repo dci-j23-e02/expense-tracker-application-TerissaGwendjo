@@ -1,5 +1,6 @@
 package org.example.expense_tracker_application.repository;
 
+import org.example.expense_tracker_application.model.Role;
 import org.example.expense_tracker_application.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,6 +18,6 @@ public interface UserRepository extends JpaRepository <User, Long> { // the enti
 
     @Modifying
     @Query ("UPDATE User u SET u.roles=?2 WHERE u.username =?1")
-    void updateUserRoles (String username, Set<String>roles);
+    void updateUserRoles (String username, Set<Role>roles);
 
 }

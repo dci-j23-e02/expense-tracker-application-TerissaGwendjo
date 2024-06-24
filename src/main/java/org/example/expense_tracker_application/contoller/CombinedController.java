@@ -2,6 +2,8 @@ package org.example.expense_tracker_application.contoller;
 
 
 import org.example.expense_tracker_application.model.Expense;
+import org.example.expense_tracker_application.model.Role;
+import org.example.expense_tracker_application.repository.RoleRepository;
 import org.example.expense_tracker_application.service.ExpenseService;
 import org.example.expense_tracker_application.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +27,19 @@ public class CombinedController {
     @Autowired // Injects the ExpenseService dependency
     private ExpenseService expenseService;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
     // what makes these dependencies as bean is the annotation @Service
     //so any instance of those classes will be considered a bean in our spring container
 
     @GetMapping("/") // Maps GET requests for / to this method
     public String homePage(Principal principal) {
-        User user = userService.findByUserName(principal.getName());
-        if (user.getRoles().contains("ROLE_ADMIN"))
-        {
+        User user = userService.findByUsername(principal.getName());
+        if (user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"))) {
             return "redirect:/admin-home";
         }
-        return "home"; // Returns the view name "home"
+        return "home";
     }
 
     @GetMapping("/admin-home")
@@ -100,26 +104,28 @@ public class CombinedController {
 
     @PostMapping("/assign-admin")
     public String assignAdminRole(String username, Model model) {
-        User user = userService.findByUserName(username);
-        if (user != null){
-            Set <String> roles = new HashSet<>(user.getRoles());
-            roles.add("ADMIN");
+        User user = userService.findByUsername(username);
+        if (user != null) {
+            Set<Role> roles = new HashSet<>(user.getRoles());
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+            if (adminRole == null) {
+                adminRole = new Role("ROLE_ADMIN");
+                roleRepository.save(adminRole);
+            }
+            roles.add(adminRole);
             user.setRoles(roles);
-            userService.updateUserRoles(user); // new role added
+            adminRole.addUser(user); // Ensure bidirectional relationship
+            userService.updateUserRoles(user); // Ensure this method updates the user roles correctly
 
-            //LOg role assignment
+            // Log role assignment
             System.out.println("Roles assigned to user: " + user.getRoles());
 
-            model.addAttribute("successMessage", "Admin role assigned successfully!");
+            model.addAttribute("successMessage", "Admin role assigned successfully.");
         } else {
-            model.addAttribute("errorMessage", "User not found!");
+            model.addAttribute("errorMessage", "User not found.");
         }
-        return "redirect:/admin-role";
+        return "redirect:/";
     }
-
-
-
-
 
     // Expense Management
 

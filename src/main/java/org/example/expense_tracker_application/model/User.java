@@ -8,41 +8,42 @@ import java.util.Set;
 @Table(name = "users")
     public class User {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.SEQUENCE)
-        @Column(name="user_id") // ensures id field in your User class maps to a column named user_id in the database table.
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "user_id")
+    // ensures id field in your User class maps to a column named user_id in the database table.
+    private Long id;
 
-        @Column(nullable = false, unique = true)
-        private String username;
+    @Column(nullable = false, unique = true)
+    private String username;
 
-        @Column(nullable = false)
-        private String password;
+    @Column(nullable = false)
+    private String password;
 
-        @Column(nullable = false, unique = true)
-        private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-        @OneToMany(mappedBy = "user") // signifies a one-to-many relationship between the class it's applied to
-        //(in this case, the User class) and another entity (the Expense class).
+    @OneToMany(mappedBy = "user") // signifies a one-to-many relationship between the class it's applied to
+    //(in this case, the User class) and another entity (the Expense class).
+    private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
+    // It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
+    // and these expenses are stored within the expenses set.
+    @Column(nullable = false)
+    private boolean verified = false; // so from here we ask what user has been verified
 
-        private Set<Expense> expenses; // defines a collection of Expense objects associated with a single User instance.
-        // It establishes a one-to-many relationship between users and their expenses. A single user can have many expenses,
-        // and these expenses are stored within the expenses set.
-        @Column(nullable = false)
-        private boolean verified = false; // so from here we ask what user has been verified
-
-
-        @ElementCollection(fetch = FetchType.EAGER) // meaning we will load the role type immediately the user is loaded
-        @CollectionTable(name = "users_roles" , joinColumns = @JoinColumn(name = "user_id")) // the purpose of this is to create a table that will be used to store the collection of elements
-        @Column(name = "role")
-        private Set<String> roles;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable( // a ManyToMany relationship table  between two tables need another one auxiliary table that connects these two tables
+            name = "user-roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role-id")
+    )
+    private Set<Role> roles;
 
     // Constructors
-        public User() {
-        }
+    public User() {
+    }
 
-    public User(Long id, String username, String password, String email, Set<Expense> expenses, boolean verified, Set<String> roles) {
+    public User(Long id, String username, String password, String email, Set<Expense> expenses, boolean verified, Set<Role> roles) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -52,7 +53,7 @@ import java.util.Set;
         this.roles = roles;
     }
 
-    public User(String username, String password, String email, Set<Expense> expenses, boolean verified, Set<String> roles) {
+    public User(String username, String password, String email, Set<Expense> expenses, boolean verified, Set<Role> roles) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -62,41 +63,42 @@ import java.util.Set;
     }
 
     // Getters and setters
-        public Long getId() {
-            return id;
-        }
-        public void setId(Long id) {
-            this.id = id;
-        }
-        public String getUsername() {
-            return username;
-        }
-        public void setUsername(String username) {
-            this.username = username;
-        }
-        public String getPassword() {
-            return password;
-        }
-        public void setPassword(String password) {
-            this.password = password;
-        }
-        public String getEmail() {
-            return email;
-        }
-        public void setEmail(String email) {
-            this.email = email;
-        }
-        public Set<Expense> getExpenses() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Set<Expense> getExpenses() {
         return expenses;
     }
 
-    public Set<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<String> roles) {
-        this.roles = roles;
-    }
 
     public boolean isVerified() {
         return verified;
@@ -110,11 +112,32 @@ import java.util.Set;
         this.expenses = expenses;
     }
 
-        /*
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+        role.getUsers().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        role.getUsers().remove(this);
+    }
+
+
+}
+
+    /*
         * The @OneToMany(mappedBy = "user") private Set<Expense> expenses; annotation in the User class tells JPA that:
           The User class has a one-to-many relationship with the Expense class.
           JPA should look for a field named user (or potentially user with @ManyToOne) in the Expense class that manages this relationship.*/
 
 
-    }
+
 

@@ -1,7 +1,9 @@
 package org.example.expense_tracker_application.service;
 
+import org.example.expense_tracker_application.model.Role;
 import org.example.expense_tracker_application.model.User;
 import org.example.expense_tracker_application.model.VerificationToken;
+import org.example.expense_tracker_application.repository.RoleRepository;
 import org.example.expense_tracker_application.repository.UserRepository;
 import org.example.expense_tracker_application.repository.VerificationTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,18 +42,30 @@ public class UserService implements UserDetailsService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
 
     @Transactional
     public boolean saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<String>roles = new HashSet<>();
-        roles.add("USER"); // here a role "user" has been added to the set of roles
+        Set<Role>roles = new HashSet<>();
+        Role userRole = roleRepository.findByName("ROLE_USER");
+        if (userRole==null) {
+            userRole = new Role();
+            userRole.setName("ROLE_USER");
+            roleRepository.save(userRole);
+        }
+
+        roles.add(userRole);
         user.setRoles(roles);
+        userRole.addUser(user); // Ensure bidirectional relationship
         try {
             userRepository.save(user);
             sendVerificationEmail(user);
 
         } catch (MailException e) {
+            // MailException will be thrown if the email is not sent
             //log in exception (optional)
             System.out.println("Fail to send Verification Email:" + e.getMessage());
             return false;
@@ -110,7 +124,7 @@ public class UserService implements UserDetailsService {
                 .authorities(
                         user.getRoles() // Retrieves the list of roles from the user object
                                 .stream() // Converts the list of roles into a stream for processing
-                                .map(SimpleGrantedAuthority :: new)  // Maps each role to a new SimpleGrantedAuthority object
+                                .map(role -> new SimpleGrantedAuthority(role.getName()))  // take each role and create a new simple granted authority object
                                 .collect(Collectors.toList())) // collects roles to authorities; Collects the stream of SimpleGrantedAuthority objects back into a list
                 .accountLocked(!user.isVerified()) // if the account is verified, then this statement is false so account won't be locked if account isn't verified, then statement is true and account will be suspended
                 .build();
@@ -124,10 +138,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public void createVerificationToken(User user, String token) {
-        VerificationToken verificationToken = new VerificationToken();
+    public void createOrUpdateVerificationToken(User user, String token) {
+        VerificationToken verificationToken = tokenRepository.findByUsername(user.getUsername());
+        if (verificationToken == null) {
+            verificationToken = new VerificationToken();
+            verificationToken.setUser(user);
+        }
         verificationToken.setToken(token);
-        verificationToken.setUser(user);
         verificationToken.setExpiryDate(LocalDateTime.now().plusDays(1));
         tokenRepository.save(verificationToken);
 
@@ -139,21 +156,25 @@ public class UserService implements UserDetailsService {
 
     public void verifyUser (String token){
         VerificationToken verificationToken = getVerificationToken(token);
-        if (
-                verificationToken != null // does exist
-                        &&
-                        verificationToken.getExpiryDate().isAfter(LocalDateTime.now())  // not expired
+        if (verificationToken != null // does exist
+                && verificationToken.getExpiryDate().isAfter(LocalDateTime.now()) // not expired
         ) {
             User user = verificationToken.getUser();
             user.setVerified(true);
             userRepository.save(user);
-            //tokenRepository.delete(verificationToken); we might keep it for our future logs
+            // tokenRepository.delete(verificationToken); // we might keep it for our future logs
+
+            // Log verification success
+            System.out.println("User verified: " + user.getUsername());
+        } else {
+            // Log verification failure
+            System.out.println("Verification token is invalid or expired");
         }
     }
 
     private void sendVerificationEmail (User user) throws MailException {
         String token = UUID.randomUUID().toString();
-        createVerificationToken(user,token);
+        createOrUpdateVerificationToken(user,token);
         String recipientAddress = user.getEmail();
         String subject = "Email Verification";
         String confirmationUrl = "http://localhost:7272/verify?token=" + token;
@@ -170,5 +191,9 @@ public class UserService implements UserDetailsService {
 
     public void updateUserRoles(User user) {
         userRepository.updateUserRoles(user.getUsername(), user.getRoles());
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }
