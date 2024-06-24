@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -94,13 +96,22 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         } /*  if (!user.isVerified()) {
             throw new UsernameNotFoundException("User email is not verified!");
-        }
-        .accountLocked(!user.isVerified()) is same like the above if method*/
+        } */
+
+        //Log user details:
+        System.out.println("User found " + user.getUsername() + " , verified:" + user.isVerified() + " Roles: " + user.getRoles());
+
+
+        //.accountLocked(!user.isVerified()) is same like the above if method
         // Build and return UserDetails object with user details and authorities
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername()) // Set the username
                 .password(user.getPassword()) // Set the password
-                .authorities(user.getRoles().toArray(new String[0])) // Set authorities/roles
+                .authorities(
+                        user.getRoles() // Retrieves the list of roles from the user object
+                                .stream() // Converts the list of roles into a stream for processing
+                                .map(SimpleGrantedAuthority :: new)  // Maps each role to a new SimpleGrantedAuthority object
+                                .collect(Collectors.toList())) // collects roles to authorities; Collects the stream of SimpleGrantedAuthority objects back into a list
                 .accountLocked(!user.isVerified()) // if the account is verified, then this statement is false so account won't be locked if account isn't verified, then statement is true and account will be suspended
                 .build();
     }
@@ -157,4 +168,7 @@ public class UserService implements UserDetailsService {
     }
 
 
+    public void updateUserRoles(User user) {
+        userRepository.updateUserRoles(user.getUsername(), user.getRoles());
+    }
 }

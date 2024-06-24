@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.example.expense_tracker_application.model.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -28,9 +29,18 @@ public class CombinedController {
     //so any instance of those classes will be considered a bean in our spring container
 
     @GetMapping("/") // Maps GET requests for / to this method
-    public String homePage(Model model) {
-        model.addAttribute("message", "Welcome to the Expense Management System"); // Adds a message to the model
+    public String homePage(Principal principal) {
+        User user = userService.findByUserName(principal.getName());
+        if (user.getRoles().contains("ROLE_ADMIN"))
+        {
+            return "redirect:/admin-home";
+        }
         return "home"; // Returns the view name "home"
+    }
+
+    @GetMapping("/admin-home")
+    public String adminHome() {
+        return "admin-home";
     }
 
     // User Management
@@ -95,12 +105,16 @@ public class CombinedController {
             Set <String> roles = new HashSet<>(user.getRoles());
             roles.add("ADMIN");
             user.setRoles(roles);
-            userService.saveUser(user);
+            userService.updateUserRoles(user); // new role added
+
+            //LOg role assignment
+            System.out.println("Roles assigned to user: " + user.getRoles());
+
             model.addAttribute("successMessage", "Admin role assigned successfully!");
         } else {
             model.addAttribute("errorMessage", "User not found!");
         }
-        return "assign-admin";
+        return "redirect:/admin-role";
     }
 
 

@@ -34,6 +34,7 @@ public class SecurityConfiguration {
                         // Permit all requests to the home page and static resources
                         .requestMatchers("/users/new", "/login", "/users", "/verify", "/assign-admin").permitAll()
                         .requestMatchers("/currency-converter").hasRole("ADMIN")
+                        .requestMatchers("/admin-home").hasRole("ADMIN")
                         // Require authentication for any other request
                         .anyRequest().authenticated()
 
