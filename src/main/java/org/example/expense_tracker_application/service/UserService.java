@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService {
     //We implement the UserDetailsService to allow Spring Security to interact with custom data sources where user information is stored This could be a database.
-    // Also for custom authentication logic (we havecontrol over how user inormation is retrieved)
+    // Also for custom authentication logic (we have control over how user information is retrieved)
     // For security configuration (it is crucial for securing web applications as it provides the necessary user data that Spring Security needs to authenticate and authorize users.)
 
     @Autowired
@@ -103,7 +103,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Find the user by username
-        User user = findByUserName(username);
+        User user = userRepository.findByUsername(username);
         // If user is not found
         if (user == null) {
             // Throw UsernameNotFoundException
@@ -128,14 +128,6 @@ public class UserService implements UserDetailsService {
                                 .collect(Collectors.toList())) // collects roles to authorities; Collects the stream of SimpleGrantedAuthority objects back into a list
                 .accountLocked(!user.isVerified()) // if the account is verified, then this statement is false so account won't be locked if account isn't verified, then statement is true and account will be suspended
                 .build();
-    }
-
-    public User findByUserName(String username) {
-        return userRepository.findByUsername(username); // Calls the User repository method to find the user by username
-    }
-
-    public  User findByEmail(String email) {
-        return userRepository.findByEmail(email);
     }
 
     public void createOrUpdateVerificationToken(User user, String token) {
@@ -189,8 +181,9 @@ public class UserService implements UserDetailsService {
     }
 
 
+    @Transactional
     public void updateUserRoles(User user) {
-        userRepository.updateUserRoles(user.getUsername(), user.getRoles());
+        userRepository.save(user);
     }
 
     public User findByUsername(String username) {
